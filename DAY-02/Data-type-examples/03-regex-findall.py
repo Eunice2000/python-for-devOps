@@ -1,9 +1,9 @@
 import re
 
-trainningDetails = "Python for DevOps Course"
-lookForPattern = r"for"
-searchForThePattern = re.search(lookForPattern, trainningDetails)
-if searchForThePattern:
-    print("Pattern found:", searchForThePattern.group())
+imaliStaffs = "sean" "nelly" "scentry" "eunice"
+checkingForStaffs = r"eunice"
+searchForTheName = re.search(checkingForStaffs, imaliStaffs)
+if searchForTheName:
+    print( searchForTheName.group(), "the person in particlar is part of the staff")
 else:
-    print("Pattern not found")
+    print("not a staff")
