@@ -69,3 +69,14 @@ if re.search(Check, Searching):
     print(f"{found} is found and it is being replaced with", result_list)
 else:
     print("not found")
+
+
+Current = "my current state is ilorin but i was at Ilorin before actually"
+
+Change = r"ilorin"
+
+ToThis = "lagos"
+
+print("the full sentence is:", re.sub(Change, ToThis, Current).upper())
+
+
