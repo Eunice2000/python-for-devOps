@@ -21,7 +21,9 @@ jobs:
     if: always()  # This ensures the notification runs regardless of previous job status
     steps:
       - name: Notify Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished. Status: `${{ job.status }}`. Job: `${{ job.name }}`. URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
+            "text": "Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished. Status: `${{ job.status }}`. Job: `${{ job.job }}`. URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }' "$SLACK_WEBHOOK_URL"
