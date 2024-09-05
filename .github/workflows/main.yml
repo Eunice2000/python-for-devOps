@@ -18,7 +18,7 @@ jobs:
 
   notify:
     runs-on: ubuntu-latest
-    if: always()  # This ensures the notification runs regardless of previous job status
+    if: always()  # This ensures the notification runs regardless of previous job status 
     steps:
       - name: Notify Slack
         env:
