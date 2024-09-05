@@ -12,11 +12,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Add your build steps here
       - name: Build Project
         id: build  # Set ID so we can reference it later
-        run: echo "Building the project"
-        continue-on-error: true  # Continue even if build fails   
+        run: |
+          echo "Building the project"
+        continue-on-error: true  # Continue even if build fails
+        env:
+          BUILD_STATUS: ${{ steps.build.outcome }}
+
+      - name: Check Build Status
+        if: failure()
+        run: echo "Build failed" && echo "BUILD_STATUS=failure" >> $GITHUB_ENV
 
       - name: Install Helm
         id: helm
@@ -24,12 +30,21 @@ jobs:
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 
           chmod 700 get_helm.sh
           ./get_helm.sh
-          helm version  
+          helm version
+        continue-on-error: true  # Continue even if helm installation fails
+
+      - name: Check Helm Status
+        if: failure()
+        run: echo "Helm installation failed" && echo "HELM_STATUS=failure" >> $GITHUB_ENV
+
+      - name: Set Helm Status to Success if No Error
+        if: success()
+        run: echo "HELM_STATUS=success" >> $GITHUB_ENV
 
   notify:
-    needs: build  # Notify job depends on build
+    needs: build
     runs-on: ubuntu-latest
-    if: always()  # Ensure the notification runs regardless of success or failure
+    if: always()
     steps:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.27.0
@@ -41,8 +56,8 @@ jobs:
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status:
-            - Build: `${{ steps.build.conclusion }}`
-            - Helm: `${{ steps.helm.conclusion }}`
+            - Build: `${{ env.BUILD_STATUS }}`
+            - Helm: `${{ env.HELM_STATUS }}`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
