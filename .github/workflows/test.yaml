@@ -21,11 +21,10 @@ jobs:
       - name: Install Helm
         id: helm
         run: |
-         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 
-         chmod 700 get_helm.sh
-         ./get_helm.sh
-         helm version  
-
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+          helm version  
 
   notify:
     needs: build  # Notify job depends on build
@@ -35,23 +34,20 @@ jobs:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.27.0
         with:
-           # Slack bot token from GitHub secrets
           channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
           slack-message: |
             Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished.
             Status: `${{ job.status }}`
-            Job: `${{ job.name }}`
+            Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            Build Step Status: 
+            Build Step Status:
             - Build: `${{ steps.build.outcome }}`
-            - helm: `${{ steps.helm.outcome }}`
-            {% if job.status == 'failure' %}
-              {% if steps.build.outcome == 'failure' %}
-                Build Error Message: `${{ steps.build.outputs.error_message }}`
-              {% endif %}
-              {% if steps.tests.outcome == 'failure' %}
-                Test Error Message: `${{ steps.helm.outputs.error_message }}`
-              {% endif %}
+            - Helm: `${{ steps.helm.outcome }}`
+            {% if steps.build.outcome == 'failure' %}
+              Build Error: `${{ steps.build.outputs.error_message }}`
+            {% endif %}
+            {% if steps.helm.outcome == 'failure' %}
+              Helm Error: `${{ steps.helm.outputs.error_message }}`
             {% endif %}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
