@@ -16,7 +16,7 @@ jobs:
       - name: Build Project
         id: build  # Set ID so we can reference it later
         run: echo "Building the project"
-        continue-on-error: true  # Continue even if build fails 
+        continue-on-error: true  # Continue even if build fails  
 
       - name: Run Tests
         id: tests  # Set ID so we can reference it later
