@@ -31,9 +31,10 @@ jobs:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.27.0
         with:
-          slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_TOKEN }}  # Slack bot token from GitHub secrets
-          slack-channel: 'YOUR_CHANNEL_ID'  # Replace with your Slack channel ID
-          slack-text: |
+           # Slack bot token from GitHub secrets
+          channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
+          payload: |
+          
             Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished.
             Status: `${{ job.status }}`
             Job: `${{ job.name }}`
@@ -51,3 +52,4 @@ jobs:
             {% endif %}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }} 
