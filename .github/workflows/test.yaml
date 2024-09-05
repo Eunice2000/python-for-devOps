@@ -18,10 +18,14 @@ jobs:
         run: echo "Building the project"
         continue-on-error: true  # Continue even if build fails   
 
-      - name: Run Tests
-        id: tests  # Set ID so we can reference it later
-        run: echo "Running tests"
-        continue-on-error: true  # Continue even if tests fail
+      - name: Install Helm
+        id: helm
+        run: |
+         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 
+         chmod 700 get_helm.sh
+         ./get_helm.sh
+         helm version  
+
 
   notify:
     needs: build  # Notify job depends on build
@@ -40,13 +44,13 @@ jobs:
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status: 
             - Build: `${{ steps.build.outcome }}`
-            - Tests: `${{ steps.tests.outcome }}`
+            - Tests: `${{ steps.helm.outcome }}`
             {% if job.status == 'failure' %}
               {% if steps.build.outcome == 'failure' %}
                 Build Error Message: `${{ steps.build.outputs.error_message }}`
               {% endif %}
               {% if steps.tests.outcome == 'failure' %}
-                Test Error Message: `${{ steps.tests.outputs.error_message }}`
+                Test Error Message: `${{ steps.helm.outputs.error_message }}`
               {% endif %}
             {% endif %}
         env:
