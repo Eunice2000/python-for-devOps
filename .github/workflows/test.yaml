@@ -18,11 +18,11 @@ jobs:
           echo "Building the project"
         continue-on-error: true  # Continue even if build fails
         env:
-          BUILD_STATUS: ${{ steps.build.outcome }}
+          BUILD_STATUS: success  # Set default success
 
-      - name: Check Build Status
+      - name: Capture Build Failure
         if: failure()
-        run: echo "Build failed" && echo "BUILD_STATUS=failure" >> $GITHUB_ENV
+        run: echo "BUILD_STATUS=failure" >> $GITHUB_ENV
 
       - name: Install Helm
         id: helm
@@ -32,19 +32,21 @@ jobs:
           ./get_helm.sh
           helm version
         continue-on-error: true  # Continue even if helm installation fails
+        env:
+          HELM_STATUS: success  # Set default success
 
-      - name: Check Helm Status
+      - name: Capture Helm Failure
         if: failure()
-        run: echo "Helm installation failed" && echo "HELM_STATUS=failure" >> $GITHUB_ENV
+        run: echo "HELM_STATUS=failure" >> $GITHUB_ENV
 
-      - name: Set Helm Status to Success if No Error
+      - name: Set Default Helm Success if No Failure
         if: success()
         run: echo "HELM_STATUS=success" >> $GITHUB_ENV
 
   notify:
     needs: build
     runs-on: ubuntu-latest
-    if: always()
+    if: always()  # Ensure notification runs regardless of success or failure
     steps:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.27.0
