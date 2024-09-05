@@ -17,20 +17,11 @@ jobs:
         run: echo "Building the project"
 
   notify:
-    needs: build  # Ensure notify runs after 'build' job
     runs-on: ubuntu-latest
-    if: always()  # This ensures the notification runs regardless of the previous job's success or failure
+    if: always()  # This ensures the notification runs regardless of previous job status
     steps:
       - name: Notify Slack
-        uses: slackapi/slack-github-action@v1.22.0
-        with:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_BOT_TOKEN }}  # Your Slack bot token
-          # channel-id: 'C06279SKKAA'  # Replace with your Slack channel ID
-          text: |
-            @channel
-            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished.
-            Status: `${{ job.status }}`
-            Job: `${{ job.name }}`
-            URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished. Status: `${{ job.status }}`. Job: `${{ job.name }}`. URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
