@@ -41,14 +41,8 @@ jobs:
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status:
-            - Build: `${{ steps.build.outcome }}`
-            - Helm: `${{ steps.helm.outcome }}`
-            {% if steps.build.outcome == 'failure' %}
-              Build Error: `${{ steps.build.outputs.error_message }}`
-            {% endif %}
-            {% if steps.helm.outcome == 'failure' %}
-              Helm Error: `${{ steps.helm.outputs.error_message }}`
-            {% endif %}
+            - Build: `${{ steps.build.conclusion }}`
+            - Helm: `${{ steps.helm.conclusion }}`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
