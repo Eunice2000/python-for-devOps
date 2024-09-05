@@ -12,17 +12,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      # Add your build steps here
       - name: Build Project
         id: build  # Set ID so we can reference it later
-        run: |
-          echo "Building the project"
-        continue-on-error: true  # Continue even if build fails
-        env:
-          BUILD_STATUS: success  # Set default success
-
-      - name: Capture Build Failure
-        if: failure()
-        run: echo "BUILD_STATUS=failure" >> $GITHUB_ENV
+        run: echo "Building the project"
+        continue-on-error: true  # Continue even if build fails   
 
       - name: Install Helm
         id: helm
@@ -30,23 +24,12 @@ jobs:
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 
           chmod 700 get_helm.sh
           ./get_helm.sh
-          helm version
-        continue-on-error: true  # Continue even if helm installation fails
-        env:
-          HELM_STATUS: success  # Set default success
-
-      - name: Capture Helm Failure
-        if: failure()
-        run: echo "HELM_STATUS=failure" >> $GITHUB_ENV
-
-      - name: Set Default Helm Success if No Failure
-        if: success()
-        run: echo "HELM_STATUS=success" >> $GITHUB_ENV
+          helm version  
 
   notify:
-    needs: build
+    needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
-    if: always()  # Ensure notification runs regardless of success or failure
+    if: always()  # Ensure the notification runs regardless of success or failure
     steps:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.27.0
@@ -58,8 +41,14 @@ jobs:
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status:
-            - Build: `${{ env.BUILD_STATUS }}`
-            - Helm: `${{ env.HELM_STATUS }}`
+            - Build: `${{ steps.build.outcome }}`
+            - Helm: `${{ steps.helm.outcome }}`
+            {% if steps.build.outcome == 'failure' %}
+              Build Error: `${{ steps.build.outputs.error_message }}`
+            {% endif %}
+            {% if steps.helm.outcome == 'failure' %}
+              Helm Error: `${{ steps.helm.outputs.error_message }}`
+            {% endif %}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
