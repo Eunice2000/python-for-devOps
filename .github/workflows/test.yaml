@@ -31,25 +31,19 @@ jobs:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.27.0
         with:
-           # Slack bot token from GitHub secrets
           channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
           payload: |
-          
-            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished.
-            Status: `${{ job.status }}`
-            Job: `${{ job.name }}`
-            URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            Build Step Status: 
-            - Build: `${{ steps.build.outcome }}`
-            - Tests: `${{ steps.tests.outcome }}`
-            {% if job.status == 'failure' %}
-              {% if steps.build.outcome == 'failure' %}
-                Build Error Message: `${{ steps.build.outputs.error_message }}`
-              {% endif %}
-              {% if steps.tests.outcome == 'failure' %}
-                Test Error Message: `${{ steps.tests.outputs.error_message }}`
-              {% endif %}
-            {% endif %}
+            {
+              "text": "Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished.\n" +
+                       "Status: `${{ job.status }}`\n" +
+                       "Job: `${{ job.name }}`\n" +
+                       "URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n" +
+                       "Build Step Status:\n" +
+                       "- Build: `${{ steps.build.outcome }}`\n" +
+                       "- Tests: `${{ steps.tests.outcome }}`\n" +
+                       "${{ job.status == 'failure' && steps.build.outcome == 'failure' ? 'Build Error Message: `${{ steps.build.outputs.error_message }}`\n' : '' }}" +
+                       "${{ job.status == 'failure' && steps.tests.outcome == 'failure' ? 'Test Error Message: `${{ steps.tests.outputs.error_message }}`\n' : '' }}"
+            }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }} 
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
