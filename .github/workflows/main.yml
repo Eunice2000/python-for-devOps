@@ -24,7 +24,7 @@ jobs:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.22.0
         with:
-          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}  # Your Slack bot token
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_BOT_TOKEN }}  # Your Slack bot token
           channel-id: 'C06279SKKAA'  # Replace with your Slack channel ID
           text: |
             @channel
