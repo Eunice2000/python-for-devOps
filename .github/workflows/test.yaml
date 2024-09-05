@@ -32,7 +32,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.27.0
         with:
            # Slack bot token from GitHub secrets
-          slack-channel: 'C07KP9NV5N3'  # Replace with your Slack channel ID
+          channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
           slack-message: |
             Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished.
             Status: `${{ job.status }}`
