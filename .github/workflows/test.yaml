@@ -44,7 +44,7 @@ jobs:
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status: 
             - Build: `${{ steps.build.outcome }}`
-            - Tests: `${{ steps.helm.outcome }}`
+            - helm: `${{ steps.helm.outcome }}`
             {% if job.status == 'failure' %}
               {% if steps.build.outcome == 'failure' %}
                 Build Error Message: `${{ steps.build.outputs.error_message }}`
