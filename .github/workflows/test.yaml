@@ -41,8 +41,8 @@ jobs:
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status:
-            - Build: `${{ steps.build.conclusion }}`
-            - Helm: `${{ steps.helm.conclusion }}`
+            - Build: `${{ steps.build.outcome }}`
+            - Helm: `${{ steps.helm.outcome }}`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
