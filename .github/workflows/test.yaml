@@ -17,7 +17,7 @@ jobs:
         id: build  # Set ID so we can reference it later
         run: echo "Building the project"
         continue-on-error: true  # Continue even if build fails   
-
+ 
       - name: Install Helm
         id: helm
         run: |
