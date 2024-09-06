@@ -25,7 +25,6 @@ jobs:
           chmod 700 get_helm.sh
           ./get_helm.sh
           helm version  
-
   notify:
     needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
@@ -41,8 +40,8 @@ jobs:
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status:
-            - Build: `${{ steps.build.outcome }}`
-            - Helm: `${{ steps.helm.outcome }}`
+            - Build: `${{ steps.build.conclusion }}`
+            - Helm: `${{ steps.helm.conclusion }}`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
