@@ -17,16 +17,31 @@ jobs:
         id: build
         run: |
           echo "Building the project"
-          exit 1  # Force a failure for testing
+          # Simulating failure
+          exit 1
+      - name: Set Build Status
+        id: build_status
+        if: success()
+        run: echo "::set-output name=build_status::success"
+      - name: Set Build Status Failure
+        if: failure()
+        run: echo "::set-output name=build_status::failure"
 
       # Helm installation step
       - name: Install Helm
         id: helm
         run: |
           helm version
+      - name: Set Helm Status
+        id: helm_status
+        if: success()
+        run: echo "::set-output name=helm_status::success"
+      - name: Set Helm Status Failure
+        if: failure()
+        run: echo "::set-output name=helm_status::failure"
 
   notify:
-    needs: build  # Notify job depends on build finishing (either success or failure)
+    needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
     if: always()  # Ensure the notification runs regardless of success or failure
     steps:
@@ -39,9 +54,5 @@ jobs:
             Status: `${{ job.status }}`
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            Build Step Status: 
-            - Build: `${{ steps.build.outcome }}`
-            - Helm: `${{ steps.helm.outcome }}`
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+            Build Step Status:
+            - Build: `${{ steps.build_status
