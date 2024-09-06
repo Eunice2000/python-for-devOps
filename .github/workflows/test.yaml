@@ -12,17 +12,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Add your build steps here
+      # Add a command that will fail to trigger a failure
       - name: Build Project
-        id: build  # Set ID so we can reference it later
-        run: echo "Building the project"
-        
+        id: build
+        run: |
+          echo "Building the project"
+          exit 1  # This will force the step to fail
+
       - name: Install Helm
         id: helm
         run: |
-
-          helm version  
-
+          helm version  # This won't execute since the previous step will fail
+          
   notify:
     needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
