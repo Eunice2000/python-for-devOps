@@ -17,7 +17,7 @@ jobs:
         id: build  # Set ID so we can reference it later
         run: echo "Building the project"
         continue-on-error: true  # Continue even if build fails   
- 
+
       - name: Install Helm
         id: helm
         run: |
@@ -25,6 +25,7 @@ jobs:
           chmod 700 get_helm.sh
           ./get_helm.sh
           helm version  
+
   notify:
     needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
