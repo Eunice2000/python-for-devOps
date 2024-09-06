@@ -40,9 +40,6 @@ jobs:
             Status: `${{ job.status }}`
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            Build Step Status:
-            - Build: `${{ steps.build.conclusion }}`
-            - Helm: `${{ steps.helm.conclusion }}`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
