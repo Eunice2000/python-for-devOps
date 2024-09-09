@@ -49,4 +49,4 @@ jobs:
             <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>
             
             _Keep up the great work!_
-          slack-token: 'xoxb-6094612483233-7669323618503-ZiC8JxbsMvpcuA2xWlbk4I17'  # Hardcoded Slack bot token
+          SLACK_BOT_TOKEN: 'xoxb-6094612483233-7669323618503-ZiC8JxbsMvpcuA2xWlbk4I17'  # Hardcoded Slack bot token
