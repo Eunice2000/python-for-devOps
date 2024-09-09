@@ -17,7 +17,7 @@ jobs:
         id: build
         run: |
           echo "Building the project"
-          # Simulating success here (remove 'exit 1' to allow success)  
+          # Simulating success here (remove 'exit 1' to allow success)
           echo "Build successful"
           
       # Helm installation step
@@ -49,4 +49,6 @@ jobs:
             <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>
             
             _Keep up the great work!_
-          SLACK_BOT_TOKEN: 'xoxb-6094612483233-7669323618503-ZiC8JxbsMvpcuA2xWlbk4I17'  # Hardcoded Slack bot token
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}  # Use GitHub Secrets for your Slack bot token
