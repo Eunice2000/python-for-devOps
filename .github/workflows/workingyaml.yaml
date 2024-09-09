@@ -27,15 +27,16 @@ jobs:
   notify:
     needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
-    if: always()  # Ensure the notification runs regardless of success or failure
+    if: always()  # Always run the notification job regardless of build success or failure
     steps:
+      # Failure Notification
       - name: Notify Slack on Failure
-        if: failure()  # This will send a failure notification if the build fails
+        if: ${{ failure() }}  # Send notification only if the build fails
         uses: slackapi/slack-github-action@v1.27.0
         with:
           channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
           slack-message: |
-            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has failed.
+            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has **failed**.
             Status: `Workflow Failed`
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -43,13 +44,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
+      # Success Notification
       - name: Notify Slack on Success
-        if: success()  # This will send a success notification if the build succeeds
+        if: ${{ success() }}  # Send notification only if the build succeeds
         uses: slackapi/slack-github-action@v1.27.0
         with:
           channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
           slack-message: |
-            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has succeeded.
+            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has **succeeded**.
             Status: `Workflow Succeeded`
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
