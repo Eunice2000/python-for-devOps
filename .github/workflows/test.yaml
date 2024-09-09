@@ -43,7 +43,7 @@ jobs:
   notify:
     needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
-    if: always()  # Ensure the notification runs regardless of success or failure
+    if: success()  # Only run if the build job succeeded
     steps:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.27.0
@@ -55,4 +55,5 @@ jobs:
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status:
-            - Build: `${{ steps.build_status
+            - Build: `${{ steps.build_status.outputs.build_status }}`
+            - Helm: `${{ steps.helm_status.outputs.helm_status }}`
