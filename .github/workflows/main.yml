@@ -7,27 +7,37 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Add your build steps here
-      # Build step
+      # Add a command that will fail to trigger a failure
       - name: Build Project
         id: build
         run: |
           echo "Building the project"
-          exit 1  # Force a failure for testing
+          exit 1  # This will force the step to fail
 
+      - name: Install Helm
+        id: helm
+        run: |
+          helm version  # This won't execute since the previous step will fail
+          
   notify:
+    needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
-    if: always()  # This ensures the notification runs regardless of previous job status 
+    if: always()  # Ensure the notification runs regardless of success or failure
     steps:
       - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
+          slack-message: |
+            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished.
+            Status: `${{ job.status }}`
+            Job: Build and Helm Installation
+            URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished. Status: `${{ job.status }}`. Job: `${{ job.job }}`. URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          }' "$SLACK_WEBHOOK_URL"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
