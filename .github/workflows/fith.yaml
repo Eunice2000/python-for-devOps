@@ -59,7 +59,10 @@ jobs:
             - Build: `${{ steps.build_status.outputs.build_status }}`
             - Helm: `${{ steps.helm_status.outputs.helm_status }}`
             @channel  # Mentioning @channel in the message
-          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}  # Use the bot token from GitHub Secrets
+         
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}# Use the bot token from GitHub Secrets
       - name: Notify Slack on Success
         if: ${{ steps.build_status.outputs.build_status == 'success' && steps.helm_status.outputs.helm_status == 'success' }}
         uses: slackapi/slack-github-action@v1.27.0
@@ -74,4 +77,6 @@ jobs:
             - Build: `${{ steps.build_status.outputs.build_status }}`
             - Helm: `${{ steps.helm_status.outputs.helm_status }}`
             @channel  # Mentioning @channel in the message
-          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}  # Use the bot token from GitHub Secrets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
