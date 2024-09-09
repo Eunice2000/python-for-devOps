@@ -1,4 +1,4 @@
-name: sucessnotification
+name: successnotification
 
 on:
   push:
@@ -23,11 +23,11 @@ jobs:
         id: helm
         run: |
           helm version  # This won't execute since the previous step will fail
-          
+
   notify:
     needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
-    if: always()  # Ensure the notification runs regardless of success or failure
+    if: success()  # Notification is sent only if the build succeeds
     steps:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1.27.0
