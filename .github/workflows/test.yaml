@@ -43,17 +43,33 @@ jobs:
   notify:
     needs: build  # Notify job depends on build
     runs-on: ubuntu-latest
-    if: success()  # Only run if the build job succeeded
+    if: always()  # Ensure the notification runs regardless of success or failure
     steps:
-      - name: Notify Slack
+      - name: Notify Slack on Failure
+        if: ${{ steps.build_status.outputs.build_status == 'failure' || steps.helm_status.outputs.helm_status == 'failure' }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
           channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
           slack-message: |
-            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished.
+            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished with a failure.
             Status: `${{ job.status }}`
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status:
             - Build: `${{ steps.build_status.outputs.build_status }}`
             - Helm: `${{ steps.helm_status.outputs.helm_status }}`
+            @channel  # Mentioning @channel in the message
+      - name: Notify Slack on Success
+        if: ${{ steps.build_status.outputs.build_status == 'success' && steps.helm_status.outputs.helm_status == 'success' }}
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
+          slack-message: |
+            Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished successfully.
+            Status: `${{ job.status }}`
+            Job: Build and Helm Installation
+            URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Build Step Status:
+            - Build: `${{ steps.build_status.outputs.build_status }}`
+            - Helm: `${{ steps.helm_status.outputs.helm_status }}`
+            @channel  # Mentioning @channel in the message
