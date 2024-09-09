@@ -51,4 +51,4 @@ jobs:
             _Keep up the great work!_
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: "xoxb-6094612483233-7669323618503-kTXGQfGkNYbyeCENgtdZMTvt"
