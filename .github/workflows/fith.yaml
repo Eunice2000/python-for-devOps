@@ -22,10 +22,10 @@ jobs:
       - name: Set Build Status
         id: build_status
         if: success()
-        run: echo "::set-output name=build_status::success"
+        run: echo "build_status=success" >> $GITHUB_ENV
       - name: Set Build Status Failure
         if: failure()
-        run: echo "::set-output name=build_status::failure"
+        run: echo "build_status=failure" >> $GITHUB_ENV
 
       # Helm installation step
       - name: Install Helm
@@ -35,18 +35,18 @@ jobs:
       - name: Set Helm Status
         id: helm_status
         if: success()
-        run: echo "::set-output name=helm_status::success"
+        run: echo "helm_status=success" >> $GITHUB_ENV
       - name: Set Helm Status Failure
         if: failure()
-        run: echo "::set-output name=helm_status::failure"
+        run: echo "helm_status=failure" >> $GITHUB_ENV
 
   notify:
-    needs: build  # Notify job depends on build
+    needs: build
     runs-on: ubuntu-latest
     if: always()  # Ensure the notification runs regardless of success or failure
     steps:
       - name: Notify Slack on Failure
-        if: ${{ steps.build_status.outputs.build_status == 'failure' || steps.helm_status.outputs.helm_status == 'failure' }}
+        if: ${{ env.build_status == 'failure' || env.helm_status == 'failure' }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
           channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
@@ -56,15 +56,15 @@ jobs:
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status:
-            - Build: `${{ steps.build_status.outputs.build_status }}`
-            - Helm: `${{ steps.helm_status.outputs.helm_status }}`
-            @channel  # Mentioning @channel in the message
-         
+            - Build: `${{ env.build_status }}`
+            - Helm: `${{ env.helm_status }}`
+            @channel
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}# Use the bot token from GitHub Secrets
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
       - name: Notify Slack on Success
-        if: ${{ steps.build_status.outputs.build_status == 'success' && steps.helm_status.outputs.helm_status == 'success' }}
+        if: ${{ env.build_status == 'success' && env.helm_status == 'success' }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
           channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
@@ -74,9 +74,9 @@ jobs:
             Job: Build and Helm Installation
             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
             Build Step Status:
-            - Build: `${{ steps.build_status.outputs.build_status }}`
-            - Helm: `${{ steps.helm_status.outputs.helm_status }}`
-            @channel  # Mentioning @channel in the message
+            - Build: `${{ env.build_status }}`
+            - Helm: `${{ env.helm_status }}`
+            @channel
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
