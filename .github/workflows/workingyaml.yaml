@@ -34,7 +34,7 @@ jobs:
       - name: Notify Slack on Success
         uses: slackapi/slack-github-action@v1.27.0
         with:
-          channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
+          channel-id: 'C07M7S612QY'  # Replace with your Slack channel ID
           slack-message: |
             🎉 *Success Notification* 🎉
             
