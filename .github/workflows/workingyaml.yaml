@@ -1,43 +1,54 @@
-# name: sucessnotification
+name: successnotification
 
-# on:
-#   push:
-#     branches: 
-#       - "main"
+on:
+  push:
+    branches: 
+      - "development"
 
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v2
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-#       # Add a command that will fail to trigger a failure
-#       - name: Build Project
-#         id: build
-#         run: |
-#           echo "Building the project"
-#           exit 1  # This will force the step to fail
-
-#       - name: Install Helm
-#         id: helm
-#         run: |
-#           helm version  # This won't execute since the previous step will fail
+      # Build step
+      - name: Build Project
+        id: build
+        run: |
+          echo "Building the project"
+          # Simulating success here (remove 'exit 1' to allow success)
+          echo "Build successful"
           
-#   notify:
-#     needs: build  # Notify job depends on build
-#     runs-on: ubuntu-latest
-#     if: always()  # Ensure the notification runs regardless of success or failure
-#     steps:
-#       - name: Notify Slack
-#         uses: slackapi/slack-github-action@v1.27.0
-#         with:
-#           channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
-#           slack-message: |
-#             Workflow *${{ github.workflow }}* triggered by *${{ github.actor }}* has finished.
-#             Status: `${{ job.status }}`
-#             Job: Build and Helm Installation
-#             URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      # Helm installation step
+      - name: Install Helm
+        id: helm
+        run: |
+          helm version
+
+  notify:
+    needs: build
+    runs-on: ubuntu-latest
+    if: success()  # Send notification only if all the above steps succeed
+    steps:
+      - name: Notify Slack on Success
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: 'C07KP9NV5N3'  # Replace with your Slack channel ID
+          slack-message: |
+            🎉 *Success Notification* 🎉
+            
+            Hi *${{ github.actor }}*, your deployment has been successful! 🚀
+            
+            *Repository:* ${{ github.repository }}
+            *Branch:* ${{ github.ref }}
+            *Triggered by:* ${{ github.actor }}
+            *Workflow:* ${{ github.workflow }}
+            
+            You can check the details of your workflow run here:
+            <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>
+            
+            _Keep up the great work!_
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}  # Use GitHub Secrets for your Slack bot token
